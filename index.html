@@ -1,0 +1,1361 @@
+<title>Night Shift at Hollow Pines</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IM+Fell+English+SC&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one candlelit column. Manor map of seven doors -> room view with one question card at a time. Deliberately single-theme (night). */
+:root{
+  --night:#120e17;
+  --crypt:#1b1522;
+  --stone:#262030;
+  --line:#3a3045;
+  --bone:#efe5d5;
+  --dust:#ab9fb7;
+  --pumpkin:#ff8c32;
+  --pumpkin-deep:#c2601a;
+  --pumpkin-ink:#1d0f04;
+  --ecto:#8fe3b0;
+  --blood:#ff6f62;
+  --gold:#f2c14e;
+  --display:"IM Fell English SC", "Iowan Old Style", Georgia, serif;
+  --body:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  background:var(--night);
+  color:var(--bone);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.55;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+  padding-block:0 64px;
+  background-image:
+    radial-gradient(1200px 500px at 85% -120px, rgba(242,193,78,.10), transparent 60%),
+    radial-gradient(900px 400px at 0% 0%, rgba(143,227,176,.05), transparent 70%);
+  background-attachment:fixed;
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--night)}
+.wrap{max-width:860px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0;letter-spacing:.01em}
+p{margin:0}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:6px}
+
+/* top bar */
+.bar{
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:5;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding-block:12px;margin-bottom:8px;
+  background:linear-gradient(var(--night) 70%, transparent);
+}
+.brand{font-family:var(--display);font-size:20px;color:var(--gold);flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--dust);border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip b{color:var(--bone);font-weight:600}
+
+.btn{
+  appearance:none;border:1px solid var(--line);background:var(--stone);
+  padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:700;font-size:15px;
+  transition:background .15s, border-color .15s, transform .1s;
+}
+.btn:hover{border-color:var(--dust)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--pumpkin);border-color:var(--pumpkin);color:var(--pumpkin-ink)}
+.btn.primary:hover{background:#ff9d50}
+.btn.ghost{background:transparent}
+.btn.small{padding:6px 12px;font-size:13px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* intro */
+.hero{padding-block:28px 8px;display:grid;gap:14px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--pumpkin)}
+.hero h1{font-size:clamp(40px, 9vw, 76px);line-height:.95;color:var(--bone)}
+.hero h1 span{color:var(--pumpkin);display:block}
+.lede{color:var(--dust);max-width:62ch;font-size:17px}
+.panel{background:var(--crypt);border:1px solid var(--line);border-radius:14px;padding:20px;display:grid;gap:14px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+label.f{display:grid;gap:6px;font-size:14px;color:var(--dust)}
+input[type=text],textarea,select{
+  font:inherit;color:var(--bone);background:var(--night);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%;min-width:0;
+}
+textarea{min-height:110px;resize:vertical;line-height:1.5}
+select{cursor:pointer}
+.note{font-size:13px;color:var(--dust)}
+details.teacher{border-top:1px solid var(--line);padding-top:12px}
+details.teacher summary{cursor:pointer;color:var(--gold);font-weight:700}
+details.teacher ul{margin:10px 0 0;padding-left:20px;color:var(--dust);display:grid;gap:6px;font-size:14px}
+
+/* manor map */
+.mapHead{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;padding-block:18px 6px}
+.mapHead h2{font-size:34px}
+.candles{display:flex;gap:6px;align-items:end}
+.candle{width:10px;height:26px;border-radius:2px 2px 1px 1px;background:var(--line);position:relative}
+.candle.lit{background:#e9dcc4}
+.candle.lit::after{content:"";position:absolute;left:50%;top:-11px;width:8px;height:12px;margin-left:-4px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(circle at 50% 70%, #fff3c4, var(--gold) 45%, var(--pumpkin) 80%);animation:flick 2.4s infinite ease-in-out}
+@keyframes flick{0%,100%{transform:scale(1) rotate(-2deg)}40%{transform:scale(1.08,.94) rotate(2deg)}70%{transform:scale(.95,1.06) rotate(-1deg)}}
+.dayLabel{display:flex;align-items:center;gap:12px;margin:26px 0 12px;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--dust)}
+.dayLabel::after{content:"";flex:1;height:1px;background:var(--line)}
+.doors{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.door{
+  text-align:left;display:grid;gap:8px;align-content:start;
+  background:var(--crypt);border:1px solid var(--line);border-radius:14px 14px 6px 6px;padding:18px;cursor:pointer;
+  position:relative;overflow:hidden;min-height:170px;
+}
+.door::before{content:"";position:absolute;inset:0 0 auto;height:3px;background:var(--line)}
+.door.open::before{background:var(--pumpkin)}
+.door.cleared::before{background:var(--ecto)}
+.door:hover:not([disabled]){border-color:var(--dust)}
+.door[disabled]{cursor:not-allowed;opacity:.55}
+.door .num{font-family:var(--mono);font-size:12px;color:var(--dust);letter-spacing:.08em}
+.door h3{font-size:24px;line-height:1.1}
+.door .topics{font-size:13px;color:var(--dust)}
+.door .status{margin-top:auto;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.door.open .status{color:var(--pumpkin)}
+.door.cleared .status{color:var(--ecto)}
+.door.locked .status{color:var(--dust)}
+
+/* room */
+.roomHead{display:grid;gap:8px;padding-block:14px 10px}
+.roomHead h2{font-size:clamp(30px,6vw,44px);line-height:1.02}
+.story{color:var(--dust);max-width:64ch}
+.dots{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.dot{width:32px;height:32px;border-radius:8px;border:1px solid var(--line);background:var(--crypt);font-family:var(--mono);font-size:12px;cursor:pointer;display:grid;place-items:center;color:var(--dust)}
+.dot.cur{border-color:var(--pumpkin);color:var(--bone)}
+.dot.done{background:#20352a;border-color:#3a6b50;color:var(--ecto)}
+.dot.part{background:#3a2a1a;border-color:#7a5428;color:var(--gold)}
+.dot[disabled]{opacity:.35;cursor:not-allowed}
+
+.card{background:var(--crypt);border:1px solid var(--line);border-radius:16px;padding:22px;display:grid;gap:18px;margin-top:14px}
+.qmeta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dust)}
+.qmeta .type{color:var(--pumpkin)}
+.prompt{font-size:18px;line-height:1.5;max-width:68ch}
+.prompt em{color:var(--gold);font-style:normal}
+.scenario{background:var(--night);border:1px dashed var(--line);border-radius:10px;padding:14px 16px;color:var(--bone);font-size:15px}
+
+.opts{display:grid;gap:10px}
+.opt{
+  display:flex;gap:12px;align-items:flex-start;text-align:left;
+  background:var(--night);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;line-height:1.45;
+}
+.opt .mk{flex:0 0 22px;height:22px;border-radius:50%;border:2px solid var(--dust);margin-top:1px;display:grid;place-items:center;font-size:12px;font-weight:700}
+.opt.sq .mk{border-radius:5px}
+.opt[aria-checked=true]{border-color:var(--pumpkin);background:#2a1a10}
+.opt[aria-checked=true] .mk{border-color:var(--pumpkin);background:var(--pumpkin);color:var(--pumpkin-ink)}
+.opt.right{border-color:var(--ecto);background:#15291f}
+.opt.right .mk{border-color:var(--ecto)}
+.opt.wrong{border-color:var(--blood);background:#2f1513}
+.opt[disabled]{cursor:default}
+
+.pairs{display:grid;gap:10px}
+.pair{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:12px;align-items:center;background:var(--night);border:1px solid var(--line);border-radius:10px;padding:12px}
+.pair .lt{min-width:0;font-size:15px}
+.pair.right{border-color:var(--ecto)}
+.pair.wrong{border-color:var(--blood)}
+.fix{grid-column:1/-1;font-size:13px;color:var(--ecto)}
+@media (max-width:560px){.pair{grid-template-columns:1fr}}
+
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--crypt);border-radius:8px;padding:6px 10px;font-size:13px;cursor:pointer;font-weight:700}
+.seg button[aria-pressed=true]{background:var(--pumpkin);border-color:var(--pumpkin);color:var(--pumpkin-ink)}
+.seg button[disabled]{cursor:default}
+
+.order{display:grid;gap:8px;counter-reset:ord;list-style:none;margin:0;padding:0}
+.order li{display:flex;gap:10px;align-items:center;background:var(--night);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.order li .n{font-family:var(--mono);color:var(--pumpkin);width:22px;flex:0 0 auto}
+.order li .t{flex:1;min-width:0}
+.order li .mv{display:flex;gap:4px}
+.order li .mv button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--crypt);cursor:pointer}
+.order li.right{border-color:var(--ecto)}
+.order li.wrong{border-color:var(--blood)}
+
+.blanks{display:grid;gap:12px}
+.blank{display:grid;gap:6px}
+.blank.right input{border-color:var(--ecto)}
+.blank.wrong input{border-color:var(--blood)}
+
+.plan{background:var(--night);border:1px solid var(--line);border-radius:12px;overflow-x:auto}
+.plan svg{display:block;width:100%;min-width:560px;height:auto}
+.plan .mkr{cursor:pointer}
+.plan .mkr:focus{outline:none}
+.plan .mkr:focus-visible circle{stroke:var(--gold);stroke-width:4}
+.legend{display:grid;gap:8px}
+
+.logwrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table.log{border-collapse:collapse;width:100%;min-width:480px;font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+table.log th,table.log td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+table.log th{color:var(--dust);font-weight:400;letter-spacing:.06em;text-transform:uppercase;font-size:11px;background:var(--stone)}
+table.log tr.sel td{background:#2a1a10}
+table.log tr.right td{background:#15291f}
+table.log tr.wrong td{background:#2f1513}
+table.log td.num{text-align:right}
+table.log input{width:18px;height:18px;accent-color:var(--pumpkin)}
+
+.wfield{display:grid;gap:6px}
+.wfield .lab{font-weight:700;font-size:15px}
+.wc{font-family:var(--mono);font-size:12px;color:var(--dust)}
+
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line);padding-top:16px}
+.actions .sp{flex:1}
+.fb{border-radius:10px;padding:14px 16px;display:grid;gap:6px;font-size:15px}
+.fb.ok{background:#15291f;border:1px solid #3a6b50}
+.fb.mid{background:#2e2312;border:1px solid #7a5428}
+.fb.no{background:#2f1513;border:1px solid #7a332c}
+.fb strong{font-family:var(--display);font-size:20px;font-weight:400}
+.fb.ok strong{color:var(--ecto)} .fb.mid strong{color:var(--gold)} .fb.no strong{color:var(--blood)}
+.hintBox{background:var(--night);border-left:3px solid var(--gold);padding:10px 14px;border-radius:0 8px 8px 0;color:var(--bone);font-size:15px}
+
+/* summary screens */
+.big{font-family:var(--display);font-size:clamp(48px,12vw,96px);line-height:1;color:var(--pumpkin);font-variant-numeric:tabular-nums}
+.tally{display:grid;gap:8px}
+.tally .t{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.tally .t span:last-child{font-family:var(--mono)}
+.codebox{font-family:var(--mono);font-size:12px;word-break:break-all;background:var(--night);border:1px solid var(--line);border-radius:8px;padding:10px;max-height:120px;overflow:auto;color:var(--dust)}
+.cleared{animation:rise .8s ease-out both}
+@keyframes rise{from{transform:translateY(12px);opacity:.2}to{transform:none;opacity:1}}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(8,6,10,.75);z-index:20;display:grid;place-items:center;padding:16px}
+.modal{background:var(--crypt);border:1px solid var(--line);border-radius:16px;padding:22px;max-width:520px;width:100%;display:grid;gap:14px;max-height:90vh;overflow:auto}
+.modal h3{font-size:26px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--bone);color:var(--night);padding:10px 16px;border-radius:10px;font-weight:700;z-index:30;max-width:calc(100% - 32px);box-shadow:0 8px 30px rgba(0,0,0,.5)}
+.fog{position:fixed;inset:auto 0 0 0;height:180px;pointer-events:none;z-index:0;background:linear-gradient(transparent, rgba(171,159,183,.06));}
+main{position:relative;z-index:1}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="fog" aria-hidden="true"></div>
+<main class="wrap" id="app"></main>
+<div id="layer"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+/* =========================================================
+   CONTENT — AP Cybersecurity Unit 2: Securing Spaces
+   ========================================================= */
+const PTS = 10;
+
+const ROOMS = [
+{
+  id:"r1", day:1, name:"The Foyer of Masks", topics:"2.1.A · Social engineering tactics",
+  story:"Something in the foyer keeps calling your phone, sending emails, and knocking at the door. Every visitor wears a mask. Unmask the manipulation tactic behind each one.",
+  qs:[
+  {id:"r1q1", type:"match", lo:"2.1.A",
+   prompt:"Match each haunted message to the social engineering tactic it relies on most.",
+   pairs:[
+    ["A friendly caller says they're running a neighborhood trick-or-treat safety survey, then asks which nights your house is empty.","Pretexting"],
+    ["An email that appears to come from the principal tells the front office to send the full student roster to an outside address.","Authority"],
+    ["\"Pay $200 in gift cards or we report your account to the police.\"","Intimidation"],
+    ["\"Everyone in your homeroom already entered the Haunted Hayride raffle. Enter your school login to join them!\"","Consensus"],
+    ["\"Only 5 free tickets left to Midnight Scream Fest. Claim yours before they're gone!\"","Scarcity"],
+    ["A text from an unknown number: \"Hey, it's your cousin Jordan, new phone! Can you send me the code that just came to you?\"","Familiarity"],
+    ["\"Your library account will be permanently deleted at midnight tonight unless you verify your password now.\"","Urgency"]],
+   hint:"Scarcity is about limited supply. Urgency is about a deadline to avoid something bad.",
+   why:"Pretexting invents a believable reason to make contact; authority impersonates someone with power over you; intimidation threatens consequences; consensus claims everyone else is doing it; scarcity limits availability; familiarity poses as someone close to you; urgency sets a deadline to avert a bad outcome."},
+  {id:"r1q2", type:"mc", lo:"2.1.A",
+   prompt:"At their core, what do social engineers exploit?",
+   options:["Unpatched software bugs","Psychological tactics that manipulate a person into taking a desired action","Weak encryption algorithms","Misconfigured firewall rules"],
+   answer:1,
+   why:"Social engineering targets people, not machines. It uses psychological pressure to get a target to click, share, or open a door."},
+  {id:"r1q3", type:"multi", lo:"2.1.A",
+   prompt:"Read the email below. Select <em>every</em> tactic it uses.",
+   scenario:"From: Dean Graves (dean.graves@hollowpines-staff.co)<br>Subject: FINAL NOTICE – Costume Day compliance form<br><br>All other staff have already submitted the new Costume Day compliance form. Yours is due within 1 hour. Staff who miss the deadline will have a day of pay docked. Click here to log in and submit.",
+   options:["Authority","Consensus","Urgency","Intimidation","Scarcity","Familiarity"],
+   answers:[0,1,2,3],
+   hint:"Look for: who it claims to be from, what 'everyone else' did, a deadline, and a threat.",
+   why:"Authority (it claims to be from the dean), consensus (\"all other staff\"), urgency (1-hour deadline), and intimidation (docked pay). Nothing is in limited supply, and the sender isn't posing as a friend or relative."},
+  {id:"r1q4", type:"blank", lo:"2.1.A",
+   prompt:"Fill in the blank.",
+   parts:["When an adversary creates a believable reason to contact a target, the tactic is called",{accept:["pretexting","pretext"]},"."],
+   why:"Pretexting: the invented back-story (a survey, an IT ticket, a delivery) that makes the contact seem legitimate."},
+  {id:"r1q5", type:"tf", lo:"2.1.A",
+   prompt:"True or false: Scarcity and urgency are two names for the same tactic.",
+   answer:1,
+   why:"False. Scarcity creates a sense of limited availability (\"only 5 left\"). Urgency creates a deadline that requires quick action to avoid negative consequences (\"deleted at midnight\")."},
+  {id:"r1q6", type:"written", lo:"2.1.A",
+   prompt:"You're on the Xtensr security awareness team. Write a short warning for employees about a Halloween-themed social engineering scam.",
+   fields:[
+    {label:"Describe the scam (2–3 sentences)", min:25},
+    {label:"Name two tactics it uses and point to the words that show each", min:20},
+    {label:"One action employees should take if they receive it", min:10}],
+   why:"Teacher-scored. Strong answers name tactics accurately (e.g., urgency + authority) and quote the exact wording that reveals them."}
+  ]
+},
+{
+  id:"r2", day:1, name:"The Portrait Gallery", topics:"2.1.B · Adversaries  ·  2.1.C · Attack phases",
+  story:"The portraits in this gallery follow you with their eyes. Each one is an adversary. Figure out who they are and how they work, step by step.",
+  qs:[
+  {id:"r2q1", type:"match", lo:"2.1.B",
+   prompt:"Identify the adversary in each portrait.",
+   pairs:[
+    ["Downloaded a one-click 'hacker toolkit' from a forum and launched it at the school website to brag online, but can't explain how the tool works.","Script kiddie"],
+    ["Defaced a candy company's website to expose its use of child labor on cocoa farms.","Hacktivist"],
+    ["A lab technician passed over for promotion copies research files using their own valid badge and login.","Insider adversary"],
+    ["Attacked a regional water treatment plant's controls to disrupt an entire city on behalf of an extremist group.","Cyberterrorist"],
+    ["A multinational group deploys ransomware against hospitals and sells stolen corporate IP on illegal markets.","Transnational criminal organization"]],
+   why:"Script kiddies use others' tools for recognition or greed; hacktivists pursue a cause; insiders have legitimate access; cyberterrorists target communities and infrastructure; transnational criminal organizations chase money through ransomware and IP theft."},
+  {id:"r2q2", type:"mc", lo:"2.1.B",
+   prompt:"Which adversary is a unique threat specifically because they already have legitimate credentials and access?",
+   options:["Script kiddie","Hacktivist","Insider adversary","Transnational criminal organization"],
+   answer:2,
+   why:"Insiders already hold valid credentials, so many perimeter controls never see them coming. They may act out of greed or revenge, or be recruited by a third party."},
+  {id:"r2q3", type:"order", lo:"2.1.C",
+   prompt:"A phantom is breaking into Hollow Pines' network. Put the phases of a cyberattack in order, first to last.",
+   items:["Reconnaissance","Initial access","Persistence","Lateral movement","Taking action","Evading detection"],
+   hint:"You can't move sideways through a network until you've stayed inside it.",
+   why:"Reconnaissance → initial access → persistence → lateral movement → taking action → evading detection. Not every attack uses every phase."},
+  {id:"r2q4", type:"sort", lo:"2.1.C",
+   prompt:"Sort each action the phantom took into its attack phase.",
+   cats:["Reconnaissance","Initial access","Persistence","Lateral movement","Taking action","Evading detection"],
+   items:[
+    ["Searches the lab's website and social media for employee names (OSINT)",0],
+    ["Tricks the receptionist into opening an attachment that installs malware",1],
+    ["Installs a remote access trojan that checks in with a command-and-control server",2],
+    ["Uses a stolen administrator account to reach the research file server",3],
+    ["Copies the research files to an outside server",4],
+    ["Deletes the log entries that recorded the admin login",5]],
+   why:"OSINT gathering is reconnaissance; the malicious attachment is initial access; a RAT with C2 is persistence; using elevated accounts to reach new systems is lateral movement; exfiltration is taking action; editing logs is evading detection."},
+  {id:"r2q5", type:"mc", lo:"2.1.C",
+   prompt:"During reconnaissance, adversaries often rely on OSINT. What is OSINT?",
+   options:["Malware that opens a hidden back door","Freely available, open source information about a target","A protocol for sending commands to a compromised device","Stolen administrator credentials"],
+   answer:1,
+   why:"Open source intelligence is information anyone can find: websites, social media, news stories, public records."},
+  {id:"r2q6", type:"blank", lo:"2.1.C",
+   prompt:"Fill in both blanks.",
+   parts:["To maintain access, adversaries may use a command and control (C2) protocol, often through malware like a remote access trojan (RAT) or a",{accept:["rootkit","root kit"]},". This phase is called",{accept:["persistence"]},"."],
+   why:"Persistence keeps the adversary in without needing to break in again. RATs and rootkits are common persistence tools."}
+  ]
+},
+{
+  id:"r3", day:1, name:"The Alchemist's Study", topics:"2.1.D · Risk assessment  ·  2.1.E · Managing risk",
+  story:"Bubbling cauldrons line the shelves. Each one brews a different risk. Measure them, then decide what to do with each before something boils over.",
+  qs:[
+  {id:"r3q1", type:"blank", lo:"2.1.D",
+   prompt:"Complete the definition of risk.",
+   parts:["Risk occurs when a",{accept:["threat","threats"]},"can exploit a",{accept:["vulnerability","vulnerabilities","weakness"]},"to compromise an asset."],
+   why:"Risk = a threat + a vulnerability it can exploit + an asset that can be compromised."},
+  {id:"r3q2", type:"multi", lo:"2.1.D",
+   prompt:"Which of these count as <em>assets</em> for Hollow Pines Research? Select all that apply.",
+   options:["Unpublished research formulas (intellectual property)","The lab's reputation with funding partners","The building and its lab equipment","Employee and customer data","An adversary's ransomware kit","An unlocked server-room door"],
+   answers:[0,1,2,3],
+   why:"An asset is anything valuable: financial resources, IP, data, digital infrastructure, physical property, and reputation. A ransomware kit is a threat tool, and an unlocked door is a vulnerability."},
+  {id:"r3q3", type:"multi", lo:"2.1.D",
+   prompt:"Which factors make it <em>more likely</em> that a vulnerability will be exploited? Select all that apply.",
+   options:["Adversaries perceive the target as valuable","A well-documented exploit means little skill is needed","Highly motivated, skilled adversaries are interested in the target","The asset is covered by an insurance policy","The vulnerability is in a low-value asset nobody knows about"],
+   answers:[0,1,2],
+   why:"Likelihood rises with target value, low required skill (well-documented exploits), and motivated, capable adversaries. Insurance shifts the cost of an attack but doesn't make one less likely."},
+  {id:"r3q4", type:"sort", lo:"2.1.E",
+   prompt:"Classify each decision by risk management strategy.",
+   cats:["Avoid","Transfer","Mitigate","Accept"],
+   items:[
+    ["The lab stops collecting visitor birthdates it never uses",0],
+    ["The Haunted Hayride buys insurance to cover guest injuries",1],
+    ["A lock is installed on the server room door",2],
+    ["Leaders decide a possible $40 loss of break-room candy isn't worth addressing",3],
+    ["The lab pays a payment processor that takes on fraud liability for online orders",1],
+    ["Badge readers are added to the research wing",2]],
+   hint:"Avoid = stop the activity. Transfer = someone else carries the burden.",
+   why:"Avoidance stops the risky activity; transference moves the burden to an insurer or third party; mitigation adds controls to reduce likelihood or impact; acceptance acknowledges a residual risk the organization is willing to live with."},
+  {id:"r3q5", type:"mc", lo:"2.1.E",
+   prompt:"A motion-sensor system for the specimen vault costs $3,000 to install plus $500 per year to maintain. The expected loss from theft without it is $12,000 per year. Is it cost-effective for the first year?",
+   options:["Yes: $3,500 is less than the $12,000 expected loss","No: any control over $1,000 is too expensive","No: installation should cost $0 to be cost-effective","It can't be judged without knowing the adversary's name"],
+   answer:0,
+   why:"A cost-effective solution costs less to install and maintain ($3,000 + $500 = $3,500) than the expected loss from an attack ($12,000)."},
+  {id:"r3q6", type:"sort", lo:"2.1.D",
+   prompt:"Is each risk rating quantitative or qualitative?",
+   cats:["Quantitative","Qualitative"],
+   items:[["A $10,000 annual risk",0],["7 on a 1–10 scale",0],["Likely, high impact",1],["Severe",1],["Medium",1],["$100,000 risk",0]],
+   why:"Quantitative ratings use numbers (scores or dollar amounts). Qualitative ratings use descriptive categories like low/medium/high/severe or likely/unlikely."},
+  {id:"r3q7", type:"mc", lo:"2.1.E",
+   prompt:"After avoiding, transferring, and mitigating, some risk always remains. Why do organizations accept this residual risk?",
+   options:["Because absolute security is unattainable","Because insurance always covers it","Because residual risk can't cause damage","Because mitigation is illegal past a certain point"],
+   answer:0,
+   why:"Residual risk is the level an organization is willing to accept. Risk acceptance acknowledges that perfect security doesn't exist."}
+  ]
+},
+{
+  id:"r4", day:1, name:"The Armory of Wards", topics:"2.1.F · Security controls  ·  2.1.G · Defense in depth",
+  story:"Old wards and charms hang on every wall of the armory. Sort them, learn what each one guards, and stack them into layers before Day 1 ends.",
+  qs:[
+  {id:"r4q1", type:"sort", lo:"2.1.F",
+   prompt:"Classify each control by <em>type</em>.",
+   cats:["Physical","Technical","Managerial"],
+   items:[["Bollards in front of the lobby",0],["Firewall",1],["Password policy",2],["Encryption",1],["Security guard",0],["Incident response plan (IRP)",2],["Anti-malware software",1],["Perimeter fence",0],["Regular access reviews",2]],
+   why:"Physical controls secure the physical space; technical controls secure the digital space; managerial controls are rules, policies, and procedures."},
+  {id:"r4q2", type:"sort", lo:"2.1.F",
+   prompt:"Classify each control by <em>function</em>.",
+   cats:["Preventative","Detective","Corrective"],
+   items:[["Door lock",0],["Security camera",1],["Patching a vulnerability",2],["SIEM system",1],["Encryption",0],["Repairing a broken card reader",2],["Intrusion detection system (IDS)",1],["Intrusion prevention system (IPS)",2]],
+   hint:"In the AP framework, an IPS is grouped with controls that fix problems and restore systems.",
+   why:"Preventative controls stop attacks before they happen; detective controls identify attacks as they occur; corrective controls fix problems and restore operation. The AP framework lists IPSs as corrective."},
+  {id:"r4q3", type:"match", lo:"2.1.F",
+   prompt:"Which security principle does each situation involve?",
+   pairs:[
+    ["Only approved researchers can open the experiment files","Confidentiality"],
+    ["A ghost quietly changes test results and no one can tell the data is wrong","Integrity"],
+    ["A storm knocks the server offline, so no one can reach the results when they need them","Availability"]],
+   why:"Confidentiality = only the authorized can access; integrity = data stay accurate and trustworthy; availability = data and services are reachable when needed."},
+  {id:"r4q4", type:"mc", lo:"2.1.G",
+   prompt:"A specter picks the lock on the server room. Thanks to defense in depth, what should happen next?",
+   options:["Nothing; once one control fails, the system is fully compromised","Another control, such as device authentication or encryption, may still block access or limit the damage","The lock automatically repairs itself","The organization transfers the risk to an insurer mid-attack"],
+   answer:1,
+   why:"Defense in depth layers multiple types of controls so that when one is bypassed, another may still prevent access or limit damage."},
+  {id:"r4q5", type:"sort", lo:"2.1.G",
+   prompt:"Place each control in its defense-in-depth layer (Figure 2.1).",
+   cats:["Physical perimeter","Network","Device","Data & applications","Policy / governance"],
+   items:[["Security guards",0],["Network segmentation",1],["Endpoint detection and response (EDR)",2],["Data loss prevention (DLP) software",3],["Acceptable use policy",4],["Host-based firewall",2],["Gates and fences",0],["Access controls on files",3]],
+   why:"Physical perimeter: locks, guards, gates, cameras. Network: authentication, encryption, firewalls, segmentation. Device: EDR, authentication, anti-malware, host-based firewall. Data & apps: encryption, access controls, DLP. Policy/governance: security policies."},
+  {id:"r4q6", type:"written", lo:"2.1.G",
+   prompt:"Hollow Pines keeps all of its research on a single server. Design a defense-in-depth plan for it.",
+   fields:[
+    {label:"Layer 1: name the layer, one control, and the threat it stops", min:15},
+    {label:"Layer 2: name the layer, one control, and the threat it stops", min:15},
+    {label:"Layer 3: name the layer, one control, and the threat it stops", min:15},
+    {label:"Why is layering better than one very strong control?", min:15}],
+   why:"Teacher-scored. Look for three distinct layers, a control that fits each layer, and a specific threat for each."}
+  ]
+},
+{
+  id:"r5", day:2, name:"The Crypt", topics:"2.2.A–C · Physical vulnerabilities and attacks",
+  story:"Xtensr has handed you the floor plan for Hollow Pines Research, the lab it's acquiring. The night crew swears things move down here. Walk the building and find what an intruder would find.",
+  qs:[
+  {id:"r5q1", type:"match", lo:"2.2.A",
+   prompt:"Name each physical attack spotted on the night-shift cameras.",
+   pairs:[
+    ["A \"pizza delivery\" person carrying a tall stack of boxes asks an employee to hold the secure door open.","Piggybacking"],
+    ["Someone slips through the badge door right behind an employee who never notices them.","Tailgating"],
+    ["A visitor pretending to read a pamphlet watches a researcher type the vault PIN.","Shoulder surfing"],
+    ["After midnight, a cloaked figure digs through the recycling bin for printed org charts.","Dumpster diving"],
+    ["A small reader hidden in a coffee cup copies badge data when employees brush past.","Card cloning"]],
+   why:"Piggybacking manipulates an authorized person into granting access; tailgating follows without their knowledge; shoulder surfing watches someone enter sensitive information; dumpster diving searches trash; card cloning copies an access card."},
+  {id:"r5q2", type:"mc", lo:"2.2.A",
+   prompt:"What is the key difference between piggybacking and tailgating?",
+   options:["Piggybacking happens at night; tailgating happens during the day","In piggybacking, the authorized person is manipulated into letting the adversary in; in tailgating, they don't know the adversary followed","Tailgating requires a cloned card","Piggybacking only happens at vehicle gates"],
+   answer:1,
+   why:"Both get an adversary through a controlled entry, but piggybacking uses social engineering on a willing (tricked) person, while tailgating happens without their awareness."},
+  {id:"r5q3", type:"hotspot", lo:"2.2.B", plan:true, need:6,
+   prompt:"Inspect the Hollow Pines floor plan. Select the <em>6</em> markers that are physical vulnerabilities. Leave the secure ones alone.",
+   spots:[
+    {id:"A",x:430,y:240,label:"Server room door",obs:"The server room door has no lock, and the hallway outside it has no camera.",ok:true},
+    {id:"B",x:600,y:480,label:"Loading dock door",obs:"The loading dock door is propped open with a pumpkin crate between deliveries.",ok:true},
+    {id:"C",x:130,y:385,label:"Reception desk",obs:"The reception PC is on the internal Wi-Fi and has open USB ports facing the waiting area.",ok:true},
+    {id:"D",x:735,y:428,label:"Dumpster",obs:"The outdoor dumpster holds unshredded printouts of research notes.",ok:true},
+    {id:"E",x:722,y:322,label:"Electrical panel",obs:"The building's electrical panel is mounted outside and unlocked.",ok:true},
+    {id:"F",x:300,y:240,label:"Vault keypad",obs:"The vault's PIN keypad faces the hallway where visitors are escorted past.",ok:true},
+    {id:"G",x:130,y:480,label:"Main entrance",obs:"The main entrance has a badge reader and a staffed security desk.",ok:false},
+    {id:"H",x:590,y:240,label:"Records door",obs:"The records room has a keyed lock and a card reader that logs every entry.",ok:false},
+    {id:"I",x:450,y:385,label:"Break room",obs:"The break room has a vending machine and a TV playing horror movies.",ok:false},
+    {id:"J",x:740,y:150,label:"Parking lot",obs:"The parking area is fenced with a gated entry.",ok:false}],
+   hint:"Ask of each marker: could an adversary get in, see something, plug something in, take something, or cut something off here?",
+   why:"Vulnerable: the unlocked, unmonitored server room (unauthorized access); the propped dock door (tailgating/entry); the reception PC's USB ports (malware or keylogger foothold); the dumpster (dumpster diving); the exterior panel (power disruption); the keypad in view of visitors (shoulder surfing). The main entrance, records room, and fenced lot already have controls, and the break room holds nothing sensitive."},
+  {id:"r5q4", type:"sort", lo:"2.2.C",
+   prompt:"Rate the risk from each physical vulnerability.",
+   cats:["High","Moderate","Low"],
+   items:[
+    ["A server with customer data sits in an unlocked room off an unmonitored hallway",0],
+    ["A lobby kiosk that visitors use is also connected to the internal network",1],
+    ["Laptops with no sensitive data are left on desks in a badge-only office during lunch, with no cable locks",2],
+    ["Notebooks of unreleased formulas sit on an open cart in a public corridor",0],
+    ["The receptionist's PC on the internal Wi-Fi has exposed USB ports",1],
+    ["An unlocked supply cabinet of printer paper inside a badge-only area",2]],
+   why:"High: sensitive information or systems exposed without restricted access. Moderate: a noncritical part left open in a way that could become a foothold to other resources. Low: low-value assets that are unlikely to be targeted."},
+  {id:"r5q5", type:"multi", lo:"2.2.B",
+   prompt:"An intruder gets physical access to a researcher's unattended workstation and its ports. What could they do? Select all that apply.",
+   options:["Plug in a keylogger to capture what the user types","Insert a drive containing malware to gain control of the device","Physically destroy the device, making its data and services unavailable","Bypass many technical controls that assume the attacker is remote","Nothing, as long as the screen is turned off"],
+   answers:[0,1,2,3],
+   why:"Physical access lets adversaries plant keyloggers or malware, destroy hardware, and get around controls built for remote attacks. A dark screen protects nothing."},
+  {id:"r5q6", type:"mc", lo:"2.2.B",
+   prompt:"A prankster flips the breakers in Hollow Pines' outdoor electrical panel during the Halloween party. Which principle is compromised?",
+   options:["Confidentiality","Integrity","Availability","Non-repudiation"],
+   answer:2,
+   why:"Cutting power makes devices, and every service they provide, unavailable."},
+  {id:"r5q7", type:"mc", lo:"2.2.B",
+   prompt:"A flash flood fills the basement where Hollow Pines keeps its backup drives. How does the framework classify the flood?",
+   options:["A vulnerability","A threat","An asset","A managerial control"],
+   answer:1,
+   why:"Threats include natural disasters as well as human adversaries. A flood can destroy computers and data and disrupt digital services."},
+  {id:"r5q8", type:"written", lo:"2.2.C",
+   prompt:"Document one vulnerability you found on the floor plan as a risk assessment entry.",
+   fields:[
+    {label:"Vulnerable asset and its value", min:8},
+    {label:"Likely threat (who or what) and how they'd exploit it", min:15},
+    {label:"Severity of damage and likelihood, with reasoning", min:15},
+    {label:"Final rating (quantitative or qualitative)", min:2}],
+   why:"Teacher-scored. A complete entry covers the asset and value, likely threats, how the vulnerability would be exploited, severity and likelihood, and a final rating."}
+  ]
+},
+{
+  id:"r6", day:2, name:"The Bell Tower", topics:"2.3.A–B · Protecting physical spaces",
+  story:"The bell tolls every hour the manor stays unsealed. Choose the right protections and get them in place before the bell strikes midnight.",
+  qs:[
+  {id:"r6q1", type:"multi", lo:"2.3.A",
+   prompt:"Which rules belong in Hollow Pines' workstation security policy? Select all that apply.",
+   options:["Lock your device before leaving your workstation","Clear sensitive documents off your desk before walking away (clean desk)","Use a privacy screen filter where others can see your monitor","Plug devices into a surge protector or UPS","Share your password with a teammate who covers your shift","Turn off the screen lock so the device is faster to use"],
+   answers:[0,1,2,3],
+   why:"Workstation policies commonly require locking devices, clean desks, privacy screens, and surge protectors or UPSs. Sharing passwords and disabling screen locks weaken security."},
+  {id:"r6q2", type:"mc", lo:"2.3.A",
+   prompt:"A researcher cheerfully badges a costumed \"new intern\" into the research wing. Which managerial control best targets this behavior?",
+   options:["Security awareness training that teaches employees not to badge others into restricted areas","A stronger firewall","Disabling USB ports","A new bollard outside the lobby"],
+   answer:0,
+   why:"Security awareness training teaches employees to spot social engineering, not badge others in, and prevent device theft."},
+  {id:"r6q3", type:"match", lo:"2.3.B",
+   prompt:"Match each vulnerability to the mitigation that best addresses it.",
+   pairs:[
+    ["Visitors tailgate into the research wing behind employees","Access control vestibule"],
+    ["The reception PC has exposed USB ports","Disable USB ports"],
+    ["A server rack sits in a shared room","Lock on the server cabinet"],
+    ["A power outage would spoil the specimen freezer","Uninterruptible power supply (UPS)"],
+    ["A vehicle could be driven through the lobby glass","Bollards"],
+    ["No record exists of who entered the vault and when","Card reader with entry logging"]],
+   why:"Vestibules stop people from being let in behind someone; disabled USB ports block malware drives; locks keep devices from being accessed or stolen; a UPS supplies backup power; bollards deter vehicle access; card readers log badge use and deny unauthorized badges."},
+  {id:"r6q4", type:"mc", lo:"2.3.B",
+   prompt:"Budget is tight. Which mitigation should Hollow Pines do <em>first</em>?",
+   scenario:"A) $50,000 access control vestibule for a closet of spare chairs<br>B) $400 lock for the cabinet holding the customer-data server<br>C) $2,000 UPS for the break-room coffee maker",
+   options:["A","B","C","All three at the same time, regardless of cost"],
+   answer:1,
+   why:"Organizations prioritize mitigations by the severity of the risk and the cost of the fix. B addresses a severe risk cheaply."},
+  {id:"r6q5", type:"tf", lo:"2.3.B",
+   prompt:"True or false: Card readers can deny unauthorized badges, but they cannot record which badge was used or when.",
+   answer:1,
+   why:"False. Card readers can record which badges were used at which entries at specific times, and deny access to unauthorized badges."},
+  {id:"r6q6", type:"mc", lo:"2.3.B",
+   prompt:"When choosing a control for a physical vulnerability, what should a cyber defender think about first?",
+   options:["Which control is newest","How an adversary could take advantage of the vulnerability, and how to prevent, detect, or correct that attack","Which vendor offers a free trial","How to avoid involving employees"],
+   answer:1,
+   why:"Start from the attack: how would an adversary exploit this, and what prevents, detects, or corrects it?"},
+  {id:"r6q7", type:"written", lo:"2.3.B",
+   prompt:"Recommend mitigations for two vulnerabilities you found in the Crypt.",
+   fields:[
+    {label:"Vulnerability 1 and your recommended control", min:12},
+    {label:"Vulnerability 2 and your recommended control", min:12},
+    {label:"Which would you fund first, and why? Consider severity and cost.", min:15}],
+   why:"Teacher-scored. Strong answers pair each vulnerability with a fitting control and justify priority by severity and cost-effectiveness."}
+  ]
+},
+{
+  id:"r7", day:2, name:"The Watchtower", topics:"2.4.A–C · Detecting physical attacks",
+  story:"From the watchtower you can see the whole grounds. Place your eyes in the dark, read the logs, and catch whatever is slipping through the doors before dawn.",
+  qs:[
+  {id:"r7q1", type:"hotspot", lo:"2.4.B", plan:true, need:3,
+   prompt:"Choose the <em>3</em> best rooms for motion sensors.",
+   spots:[
+    {id:"1",x:140,y:150,label:"Research lab",obs:"Research lab: busy all day with eight scientists.",ok:false},
+    {id:"2",x:300,y:150,label:"Specimen vault",obs:"Specimen vault: rare samples; two people have access.",ok:true},
+    {id:"3",x:430,y:150,label:"Server room",obs:"Server room: almost no one enters except IT once a week.",ok:true},
+    {id:"4",x:590,y:150,label:"Records",obs:"Records: signed research contracts; two staff have access.",ok:true},
+    {id:"5",x:130,y:400,label:"Lobby",obs:"Lobby: visitors and staff all day.",ok:false},
+    {id:"6",x:300,y:400,label:"Offices",obs:"Offices: open-plan, staffed 7am–7pm.",ok:false},
+    {id:"7",x:450,y:400,label:"Break room",obs:"Break room: constant traffic, especially near the candy bowl.",ok:false},
+    {id:"8",x:600,y:400,label:"Loading dock",obs:"Loading dock: deliveries all day.",ok:false}],
+   hint:"Where would movement be surprising?",
+   why:"Motion sensors belong where traffic is unexpected and few people have access, like server rooms and storage for sensitive materials. In busy areas they cause false alarms, and people stop taking the alarms seriously."},
+  {id:"r7q2", type:"hotspot", lo:"2.4.B", plan:true, need:4,
+   prompt:"You have 4 cameras. Choose the 4 best placements.",
+   spots:[
+    {id:"P",x:130,y:480,label:"Main entrance",obs:"Main entrance, facing the doors.",ok:true},
+    {id:"Q",x:600,y:480,label:"Loading dock door",obs:"Loading dock door, facing the bay.",ok:true},
+    {id:"R",x:430,y:240,label:"Server room door",obs:"Hallway outside the server room door, mounted high.",ok:true},
+    {id:"S",x:300,y:240,label:"Vault door",obs:"Hallway outside the specimen vault door, mounted high.",ok:true},
+    {id:"T",x:450,y:400,label:"Break room",obs:"Inside the break room, pointed at the vending machine.",ok:false},
+    {id:"U",x:300,y:400,label:"Offices",obs:"Inside the offices, pointed at a blank wall.",ok:false},
+    {id:"V",x:140,y:150,label:"Research lab",obs:"On a low shelf in the research lab, easy to reach and turn around.",ok:false}],
+   why:"Cameras usually watch points of ingress and egress and entrances to sensitive areas. Consider coverage, angle, and whether an adversary could tamper with the camera. A camera on a low, reachable shelf is easy to defeat."},
+  {id:"r7q3", type:"log", lo:"2.4.C",
+   prompt:"Here is the badge log for the research wing door. A normal entry holds the door open 3–6 seconds. Select the <em>3</em> entries that suggest piggybacking or tailgating.",
+   cols:["Time","Badge","Employee","Door open (s)"],
+   rows:[
+    ["07:52","1042","R. Vance","4"],
+    ["08:03","1077","M. Holloway","5"],
+    ["08:04","1013","S. Crane","26"],
+    ["08:30","1042","R. Vance","3"],
+    ["09:15","1101","I. Graves","6"],
+    ["12:02","1077","M. Holloway","31"],
+    ["12:40","1013","S. Crane","4"],
+    ["13:10","1150","E. Ravenscroft","5"],
+    ["16:47","1101","I. Graves","19"],
+    ["17:30","1042","R. Vance","4"]],
+   answers:[2,5,8],
+   why:"A door held open far longer than normal (26, 31, and 19 seconds) suggests someone else came through on that badge. Investigators would pull camera footage for those times."},
+  {id:"r7q4", type:"sort", lo:"2.4.B",
+   prompt:"Should each post get a stationary guard or a patrolling guard?",
+   cats:["Stationary","Patrolling"],
+   items:[["The main lobby, where every visitor funnels in",0],["The two-mile fence line around the property",1],["The entrance to the specimen vault",0],["Exterior parking lots and the loading area",1],["Beside the one-of-a-kind prototype on display",0]],
+   why:"Stationary guards protect a specific entrance, area, or high-value item and work well where traffic funnels. Patrolling guards suit perimeters and exterior areas, and their unpredictable routes create time pressure for adversaries."},
+  {id:"r7q5", type:"mc", lo:"2.4.C",
+   prompt:"At 2:13 a.m., the server room motion sensor trips. What's the best next step?",
+   options:["Ignore it; motion sensors are often wrong","Check the server room camera to visually verify whether there's a breach","Disable the sensor so it stops alerting","Wait for the morning badge log"],
+   answer:1,
+   why:"Motion detectors work best when paired with cameras: when an alert fires, defenders check the camera to verify a real breach."},
+  {id:"r7q6", type:"mc", lo:"2.4.A",
+   prompt:"Hollow Pines' lobby camera shows a live feed at the guard desk but doesn't record. What do they lose?",
+   options:["Nothing, since a live feed is enough","The ability to review footage during an after-incident investigation","The ability to lock the doors","Their firewall rules"],
+   answer:1,
+   why:"Camera feeds should be recorded and monitored. Recordings are especially helpful in after-incident investigations and for tracking an adversary's path."},
+  {id:"r7q7", type:"multi", lo:"2.4.A",
+   prompt:"Which of these can <em>detect</em> a physical intrusion? Select all that apply.",
+   options:["An employee who notices an unfamiliar person and alerts security","Cameras paired with facial recognition that alert on unauthorized people","A security guard monitoring an area","A motion sensor in the server room","A perimeter fence","An uninterruptible power supply"],
+   answers:[0,1,2,3],
+   why:"Employees, cameras (especially with facial recognition alerts), guards, and motion sensors detect intrusions. A fence deters and a UPS keeps power on, but neither tells you someone got in."},
+  {id:"r7q8", type:"written", lo:"2.4.B",
+   prompt:"Final report for Xtensr: recommend monitoring equipment for Hollow Pines.",
+   fields:[
+    {label:"One camera: where, and what it would capture", min:12},
+    {label:"One motion sensor: where, and why traffic there is unexpected", min:12},
+    {label:"One guard: stationary or patrolling, where, and why", min:12}],
+   why:"Teacher-scored. Strong answers tie each placement to coverage, tamper resistance, expected traffic, and what the control would reveal."}
+  ]
+}
+];
+
+const TYPE_LABEL = {mc:"Multiple choice", tf:"True / false", multi:"Select all", match:"Matching", order:"Sequence", sort:"Sort", blank:"Fill in the blank", hotspot:"Floor plan", log:"Log analysis", written:"Written response"};
+
+/* =========================================================
+   STATE + PERSISTENCE
+   ========================================================= */
+const STORE = "hollowpines-u2-v1";
+const SALT = "xtensr-hollow-pines-2a";
+let S = null;
+let view = {screen:"intro", room:0, q:0};
+let draft = {};
+let hintOpen = {};
+
+function fnv(str){let h=0x811c9dc5;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0;}return h.toString(16).padStart(8,"0");}
+function fresh(name, period){return {v:1, name, period, created:Date.now(), ans:{}, time:{}, savedAt:null};}
+function persist(){ if(!S) return; S.savedAt = Date.now(); try{ localStorage.setItem(STORE, JSON.stringify(S)); }catch(e){} }
+function loadLocal(){ try{ const t = localStorage.getItem(STORE); if(!t) return null; const o = JSON.parse(t); return (o && o.v===1 && o.ans) ? o : null; }catch(e){ return null; } }
+function encodeSave(){ const json = JSON.stringify(S); const b = btoa(unescape(encodeURIComponent(json))); return "HPL2." + b + "." + fnv(SALT+json); }
+function decodeSave(code){
+  code = (code||"").trim().replace(/\s+/g,"");
+  const a = code.indexOf("."), z = code.lastIndexOf(".");
+  if(!code.startsWith("HPL2.") || a===z) throw new Error("That doesn't look like a Hollow Pines save code. Copy the whole code, starting with HPL2.");
+  const b = code.slice(a+1, z), sig = code.slice(z+1);
+  let json; try{ json = decodeURIComponent(escape(atob(b))); }catch(e){ throw new Error("The save code is incomplete. Copy it again from start to end."); }
+  if(fnv(SALT+json) !== sig) throw new Error("This save code was changed after it was made, so it can't be loaded.");
+  const o = JSON.parse(json); if(!o || o.v!==1) throw new Error("This save is from a different game.");
+  return o;
+}
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+function h(tag, attrs, ...kids){
+  const el = document.createElement(tag);
+  if(attrs) for(const k in attrs){
+    const v = attrs[k]; if(v===null || v===undefined || v===false) continue;
+    if(k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else if(k==="class") el.className = v;
+    else if(k==="html") el.innerHTML = v;
+    else el.setAttribute(k, v===true ? "" : v);
+  }
+  for(const c of kids.flat(3)){ if(c===null||c===undefined||c===false) continue; el.append(c.nodeType ? c : document.createTextNode(String(c))); }
+  return el;
+}
+function perm(n, seed){
+  const a = [...Array(n).keys()]; let s = parseInt(fnv(seed),16) || 7;
+  for(let i=n-1;i>0;i--){ s = (Math.imul(s,1103515245)+12345)>>>0; const j = (s>>>8)%(i+1); [a[i],a[j]]=[a[j],a[i]]; }
+  // avoid the identity order for sequence questions
+  return a;
+}
+function seedFor(q){ return q.id + "|" + (S ? S.name.toLowerCase() : ""); }
+function toast(msg){ const t = h("div",{class:"toast",role:"status"},msg); document.body.append(t); setTimeout(()=>t.remove(), 3200); }
+function fmt(n){ return (Math.round(n*10)/10).toFixed(1).replace(/\.0$/,""); }
+function words(s){ return (s||"").trim().split(/\s+/).filter(Boolean).length; }
+function allQs(){ return ROOMS.flatMap(r=>r.qs); }
+function roomDone(r){ return r.qs.every(q=>S.ans[q.id] && S.ans[q.id].done); }
+function roomScore(r){ return r.qs.reduce((t,q)=>t+((S.ans[q.id]&&S.ans[q.id].score)||0),0); }
+function roomUnlocked(i){ return i===0 || roomDone(ROOMS[i-1]); }
+function total(){ return allQs().reduce((t,q)=>t+((S.ans[q.id]&&S.ans[q.id].score)||0),0); }
+const MAX = allQs().length * PTS;
+function doneCount(){ return allQs().filter(q=>S.ans[q.id]&&S.ans[q.id].done).length; }
+function norm(s){ return (s||"").toLowerCase().replace(/[^a-z0-9 ]/g,"").replace(/\s+/g," ").trim(); }
+function blankSlots(q){ return q.parts.filter(p=>typeof p==="object"); }
+
+/* =========================================================
+   GRADING
+   ========================================================= */
+function setScore(sel, key){ // sel: array of chosen idx, key: array of correct idx
+  const right = sel.filter(i=>key.includes(i)).length, wrong = sel.length - right;
+  return {frac: Math.max(0,(right-wrong)/key.length), right, total:key.length};
+}
+function grade(q, r){
+  return {frac: 1, right: 1, total: 1};
+  switch(q.type){
+    case "mc": case "tf": return {frac: r===q.answer?1:0, right:r===q.answer?1:0, total:1};
+    case "multi": return setScore(r||[], q.answers);
+    case "log": return setScore(r||[], q.answers);
+    case "hotspot": { const key = q.spots.map((s,i)=>s.ok?i:-1).filter(i=>i>=0); return setScore(r||[], key); }
+    case "match": { const n=q.pairs.length; let c=0; q.pairs.forEach((p,i)=>{ if(r[i]===i) c++; }); return {frac:c/n,right:c,total:n}; }
+    case "order": { const n=q.items.length; let c=0; r.forEach((it,pos)=>{ if(it===pos) c++; }); return {frac:c/n,right:c,total:n}; }
+    case "sort": { const n=q.items.length; let c=0; q.items.forEach((it,i)=>{ if(r[i]===it[1]) c++; }); return {frac:c/n,right:c,total:n}; }
+    case "blank": { const slots=blankSlots(q); let c=0; slots.forEach((s,i)=>{ if(s.accept.includes(norm(r[i]))) c++; }); return {frac:c/slots.length,right:c,total:slots.length}; }
+    case "written": { const f=q.fields; let sum=0; f.forEach((fd,i)=>{ sum += Math.min(1, words(r[i])/fd.min); }); return {frac:sum/f.length,right:null,total:null}; }
+  }
+}
+function complete(q, r){
+  switch(q.type){
+    case "mc": case "tf": return typeof r==="number";
+    case "multi": case "log": case "hotspot": return Array.isArray(r) && r.length>0;
+    case "match": case "sort": return Array.isArray(r) && r.length===(q.pairs||q.items).length && r.every(v=>typeof v==="number");
+    case "order": return true;
+    case "blank": return Array.isArray(r) && blankSlots(q).every((s,i)=>(r[i]||"").trim());
+    case "written": return Array.isArray(r) && q.fields.every((f,i)=>(r[i]||"").trim());
+  }
+}
+function initDraft(q){
+  const a = S.ans[q.id];
+  if(a && a.resp !== undefined) return JSON.parse(JSON.stringify(a.resp));
+  switch(q.type){
+    case "mc": case "tf": return null;
+    case "multi": case "log": case "hotspot": return [];
+    case "match": return q.pairs.map(()=>null);
+    case "sort": return q.items.map(()=>null);
+    case "order": { let p = perm(q.items.length, seedFor(q)); if(p.every((v,i)=>v===i)) p = p.reverse(); return p; }
+    case "blank": return blankSlots(q).map(()=>"");
+    case "written": return q.fields.map(()=>"");
+  }
+}
+
+/* =========================================================
+   QUESTION RENDERERS
+   ========================================================= */
+function renderBody(q, a){
+  const r = draft[q.id];
+  const locked = !!(a && a.done);
+  const reveal = locked;
+  const set = v => { draft[q.id] = v; };
+  switch(q.type){
+    case "mc": case "tf": {
+      const opts = q.type==="tf" ? ["True","False"] : q.options;
+      const order = q.type==="tf" ? [0,1] : perm(opts.length, seedFor(q));
+      const box = h("div",{class:"opts",role:"radiogroup","aria-label":"Answer choices"});
+      order.forEach((oi, k)=>{
+        let cls = "opt";
+        if(reveal && oi===q.answer) cls += " right"; else if(reveal && r===oi) cls += " wrong";
+        const b = h("button",{class:cls,role:"radio","aria-checked":String(r===oi),disabled:locked,
+          onclick:()=>{ set(oi); box.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-checked", String(x===b))); }},
+          h("span",{class:"mk","aria-hidden":"true"}, String.fromCharCode(65+k)), h("span",null,opts[oi]));
+        box.append(b);
+      });
+      return box;
+    }
+    case "multi": {
+      const order = perm(q.options.length, seedFor(q));
+      const box = h("div",{class:"opts"});
+      order.forEach(oi=>{
+        const on = r.includes(oi);
+        let cls = "opt sq";
+        if(reveal && q.answers.includes(oi)) cls += " right"; else if(reveal && on) cls += " wrong";
+        const b = h("button",{class:cls,role:"checkbox","aria-checked":String(on),disabled:locked,
+          onclick:()=>{ const cur = draft[q.id]; const i = cur.indexOf(oi); if(i>=0) cur.splice(i,1); else cur.push(oi); b.setAttribute("aria-checked", String(cur.includes(oi))); b.querySelector(".mk").textContent = cur.includes(oi) ? "✓" : ""; }},
+          h("span",{class:"mk","aria-hidden":"true"}, on ? "✓" : ""), h("span",null,q.options[oi]));
+        box.append(b);
+      });
+      return box;
+    }
+    case "match": {
+      const rights = q.pairs.map(p=>p[1]);
+      const ro = perm(rights.length, seedFor(q)+"R");
+      const lo = perm(q.pairs.length, seedFor(q)+"L");
+      const box = h("div",{class:"pairs"});
+      lo.forEach(li=>{
+        const sel = h("select",{id:q.id+"-m"+li,disabled:locked,"aria-label":"Match for: "+q.pairs[li][0],
+          onchange:e=>{ draft[q.id][li] = e.target.value==="" ? null : Number(e.target.value); }},
+          h("option",{value:""},"Choose…"), ro.map(ri=>h("option",{value:ri, selected:r[li]===ri}, rights[ri])));
+        let cls = "pair"; if(reveal) cls += r[li]===li ? " right" : " wrong";
+        box.append(h("div",{class:cls}, h("div",{class:"lt"}, q.pairs[li][0]), sel,
+          reveal && r[li]!==li ? h("div",{class:"fix"}, "Correct: " + rights[li]) : null));
+      });
+      return box;
+    }
+    case "order": {
+      const list = h("ol",{class:"order"});
+      const paint = () => {
+        list.innerHTML = "";
+        draft[q.id].forEach((it,pos)=>{
+          let cls = ""; if(reveal) cls = it===pos ? "right" : "wrong";
+          const li = h("li",{class:cls},
+            h("span",{class:"n"}, pos+1),
+            h("span",{class:"t"}, q.items[it], reveal && it!==pos ? h("span",{class:"note"}," (belongs in position "+(it+1)+")") : null),
+            locked ? null : h("span",{class:"mv"},
+              h("button",{type:"button","aria-label":"Move "+q.items[it]+" up",disabled:pos===0,onclick:()=>{ const d=draft[q.id]; [d[pos-1],d[pos]]=[d[pos],d[pos-1]]; paint(); list.querySelectorAll("li")[pos-1]?.querySelector("button")?.focus(); }},"↑"),
+              h("button",{type:"button","aria-label":"Move "+q.items[it]+" down",disabled:pos===draft[q.id].length-1,onclick:()=>{ const d=draft[q.id]; [d[pos+1],d[pos]]=[d[pos],d[pos+1]]; paint(); list.querySelectorAll("li")[pos+1]?.querySelectorAll("button")[1]?.focus(); }},"↓")));
+          list.append(li);
+        });
+      };
+      paint();
+      return list;
+    }
+    case "sort": {
+      const order = perm(q.items.length, seedFor(q));
+      const box = h("div",{class:"pairs"});
+      const useSelect = q.cats.length > 3;
+      order.forEach(ii=>{
+        const it = q.items[ii];
+        let control;
+        if(useSelect){
+          control = h("select",{id:q.id+"-s"+ii,disabled:locked,"aria-label":"Category for: "+it[0],onchange:e=>{ draft[q.id][ii] = e.target.value==="" ? null : Number(e.target.value); }},
+            h("option",{value:""},"Choose…"), q.cats.map((c,ci)=>h("option",{value:ci,selected:r[ii]===ci},c)));
+        } else {
+          control = h("div",{class:"seg",role:"group","aria-label":"Category for: "+it[0]});
+          q.cats.forEach((c,ci)=>{
+            const b = h("button",{type:"button","aria-pressed":String(r[ii]===ci),disabled:locked,onclick:()=>{ draft[q.id][ii]=ci; control.querySelectorAll("button").forEach((x,xi)=>x.setAttribute("aria-pressed",String(xi===ci))); }}, c);
+            control.append(b);
+          });
+        }
+        let cls = "pair"; if(reveal) cls += r[ii]===it[1] ? " right" : " wrong";
+        box.append(h("div",{class:cls}, h("div",{class:"lt"}, it[0]), control,
+          reveal && r[ii]!==it[1] ? h("div",{class:"fix"},"Correct: "+q.cats[it[1]]) : null));
+      });
+      return box;
+    }
+    case "blank": {
+      const box = h("div",{class:"blanks"});
+      const slots = blankSlots(q);
+      const p = h("p",{class:"prompt",style:"font-size:17px"});
+      let si = 0;
+      q.parts.forEach(part=>{
+        if(typeof part === "string") p.append(part+" ");
+        else { p.append(h("span",{style:"color:var(--gold);font-family:var(--mono)"},"(" + (++si) + ")"), " "); }
+      });
+      box.append(p);
+      slots.forEach((s,i)=>{
+        const ok = slots[i].accept.includes(norm(r[i]));
+        let cls = "blank"; if(reveal) cls += ok ? " right" : " wrong";
+        box.append(h("label",{class:cls+" f"}, "Blank "+(i+1),
+          h("input",{type:"text",id:q.id+"-b"+i,value:r[i]||"",disabled:locked,autocomplete:"off",spellcheck:"false",oninput:e=>{ draft[q.id][i]=e.target.value; }}),
+          reveal && !ok ? h("span",{class:"fix"},"Accepted: "+s.accept[0]) : null));
+      });
+      return box;
+    }
+    case "hotspot": return renderPlan(q, r, locked, reveal);
+    case "log": {
+      const tb = h("tbody");
+      q.rows.forEach((row,ri)=>{
+        const on = r.includes(ri);
+        let cls = on ? "sel" : "";
+        if(reveal) cls = q.answers.includes(ri) ? "right" : (on ? "wrong" : "");
+        const cb = h("input",{type:"checkbox",id:q.id+"-l"+ri,checked:on,disabled:locked,"aria-label":"Flag entry at "+row[0],
+          onchange:e=>{ const d=draft[q.id]; const k=d.indexOf(ri); if(e.target.checked && k<0) d.push(ri); if(!e.target.checked && k>=0) d.splice(k,1); tr.className = e.target.checked ? "sel" : ""; }});
+        const tr = h("tr",{class:cls}, h("td",null,cb), row.map((c,ci)=>h("td",{class:ci===3?"num":null}, c)));
+        tb.append(tr);
+      });
+      return h("div",{class:"logwrap"}, h("table",{class:"log"}, h("thead",null,h("tr",null,h("th",null,"Flag"), q.cols.map(c=>h("th",null,c)))), tb));
+    }
+    case "written": {
+      const box = h("div",{class:"blanks"});
+      q.fields.forEach((f,i)=>{
+        const wc = h("span",{class:"wc"});
+        const upd = v => { const n=words(v); wc.textContent = n + " word" + (n===1?"":"s") + " · aim for " + f.min + "+"; };
+        const ta = h("textarea",{id:q.id+"-w"+i,disabled:locked,oninput:e=>{ draft[q.id][i]=e.target.value; upd(e.target.value); }});
+        ta.value = r[i] || ""; upd(ta.value);
+        box.append(h("label",{class:"wfield"}, h("span",{class:"lab"}, f.label), ta, wc));
+      });
+      return box;
+    }
+  }
+}
+
+const PLAN_ROOMS = [
+  ["Research Lab",40,40,200,200],["Specimen Vault",240,40,120,200],["Server Room",360,40,140,200],["Records",500,40,180,200],
+  ["Hallway",40,240,640,60],["Lobby",40,300,180,180],["Offices",220,300,160,180],["Break Room",380,300,140,180],["Loading Dock",520,300,160,180]
+];
+function renderPlan(q, r, locked, reveal){
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns,"svg");
+  svg.setAttribute("viewBox","0 0 800 520"); svg.setAttribute("role","group"); svg.setAttribute("aria-label","Hollow Pines floor plan");
+  let s = `<rect x="0" y="0" width="800" height="520" fill="#120e17"/>`;
+  s += `<rect x="692" y="20" width="100" height="480" fill="#17121d" stroke="#3a3045" stroke-dasharray="4 6"/>`;
+  s += `<text x="742" y="40" fill="#ab9fb7" font-size="11" text-anchor="middle" font-family="JetBrains Mono, monospace" letter-spacing="2">OUTSIDE</text>`;
+  s += `<rect x="702" y="62" width="80" height="190" fill="none" stroke="#3a3045"/><text x="742" y="246" fill="#ab9fb7" font-size="11" text-anchor="middle" font-family="Atkinson Hyperlegible, sans-serif">Parking</text>`;
+  s += `<rect x="702" y="300" width="44" height="44" fill="none" stroke="#3a3045"/><text x="744" y="362" fill="#ab9fb7" font-size="11" text-anchor="middle" font-family="Atkinson Hyperlegible, sans-serif">Elec. panel</text>`;
+  s += `<rect x="704" y="404" width="64" height="48" fill="none" stroke="#3a3045"/><text x="736" y="470" fill="#ab9fb7" font-size="11" text-anchor="middle" font-family="Atkinson Hyperlegible, sans-serif">Dumpster</text>`;
+  PLAN_ROOMS.forEach(([n,x,y,w,hh])=>{
+    s += `<rect x="${x}" y="${y}" width="${w}" height="${hh}" fill="${n==="Hallway"?"#1b1522":"#211a29"}" stroke="#5a4a68" stroke-width="2"/>`;
+    s += `<text x="${x+10}" y="${y+20}" fill="#efe5d5" font-size="13" font-family="Atkinson Hyperlegible, sans-serif" font-weight="700">${n}</text>`;
+  });
+  s += `<rect x="40" y="40" width="640" height="440" fill="none" stroke="#efe5d5" stroke-width="3"/>`;
+  s += `<line x1="105" y1="480" x2="155" y2="480" stroke="#120e17" stroke-width="5"/><line x1="560" y1="480" x2="640" y2="480" stroke="#120e17" stroke-width="5"/>`;
+  s += `<text x="130" y="505" fill="#ab9fb7" font-size="11" text-anchor="middle" font-family="JetBrains Mono, monospace">ENTRANCE</text><text x="600" y="505" fill="#ab9fb7" font-size="11" text-anchor="middle" font-family="JetBrains Mono, monospace">DOCK BAY</text>`;
+  svg.innerHTML = s;
+  const legend = h("div",{class:"opts legend"});
+  const marks = [];
+  const sync = () => {
+    const cur = draft[q.id];
+    q.spots.forEach((sp,i)=>{
+      const on = cur.includes(i);
+      const c = marks[i].querySelector("circle");
+      let fill = on ? "#ff8c32" : "#262030", stroke = on ? "#ff8c32" : "#ab9fb7", tcol = on ? "#1d0f04" : "#efe5d5";
+      if(reveal){ if(sp.ok){ fill = on ? "#8fe3b0" : "#262030"; stroke = "#8fe3b0"; tcol = on ? "#10261a" : "#8fe3b0"; } else if(on){ fill="#ff6f62"; stroke="#ff6f62"; tcol="#2a0d0a"; } }
+      c.setAttribute("fill",fill); c.setAttribute("stroke",stroke); marks[i].querySelector("text").setAttribute("fill",tcol);
+      marks[i].setAttribute("aria-checked",String(on));
+      const lb = legend.children[i];
+      lb.setAttribute("aria-checked",String(on)); lb.querySelector(".mk").textContent = on ? "✓" : "";
+      lb.className = "opt sq" + (reveal ? (sp.ok ? " right" : (on ? " wrong" : "")) : "");
+    });
+  };
+  const toggle = i => { if(locked) return; const d=draft[q.id]; const k=d.indexOf(i); if(k>=0) d.splice(k,1); else d.push(i); sync(); };
+  q.spots.forEach((sp,i)=>{
+    const g = document.createElementNS(ns,"g");
+    g.setAttribute("class","mkr"); g.setAttribute("tabindex", locked ? "-1" : "0"); g.setAttribute("role","checkbox"); g.setAttribute("aria-label", sp.id+": "+sp.obs);
+    g.innerHTML = `<circle cx="${sp.x}" cy="${sp.y}" r="15" stroke-width="2.5"/><text x="${sp.x}" y="${sp.y+5}" font-size="14" font-weight="700" text-anchor="middle" font-family="JetBrains Mono, monospace">${sp.id}</text><title>${sp.label}</title>`;
+    g.addEventListener("click",()=>toggle(i));
+    g.addEventListener("keydown",e=>{ if(e.key===" "||e.key==="Enter"){ e.preventDefault(); toggle(i); } });
+    svg.append(g); marks.push(g);
+    legend.append(h("button",{class:"opt sq",role:"checkbox","aria-checked":"false",disabled:locked,tabindex:"-1",onclick:()=>toggle(i)},
+      h("span",{class:"mk","aria-hidden":"true"}), h("span",null, h("b",{style:"font-family:var(--mono);color:var(--gold)"}, sp.id+"  "), sp.obs)));
+  });
+  sync();
+  return h("div",{style:"display:grid;gap:14px"},
+    h("div",{class:"plan"}, svg),
+    h("p",{class:"note"}, "Tap a marker on the plan or a line below. Selected: ", h("span",{id:q.id+"-cnt"}), ""),
+    legend);
+}
+
+/* =========================================================
+   SCREENS
+   ========================================================= */
+const app = document.getElementById("app");
+const layer = document.getElementById("layer");
+
+function topBar(){
+  return h("header",{class:"bar"},
+    h("div",{class:"brand"},"Night Shift at Hollow Pines"),
+    h("span",{class:"chip"},"Score ", h("b",null, fmt(total())), " / "+MAX),
+    h("span",{class:"chip"}, h("b",null, doneCount()), " / "+allQs().length+" solved"),
+    h("button",{class:"btn small",onclick:openSave},"Save progress"));
+}
+
+function render(){
+  layer.innerHTML = "";
+  app.innerHTML = "";
+  if(view.screen==="intro") return renderIntro();
+  app.append(topBar());
+  if(view.screen==="map") renderMap();
+  else if(view.screen==="room") renderRoom();
+  else if(view.screen==="roomdone") renderRoomDone();
+  else if(view.screen==="finish") renderFinish();
+  window.scrollTo({top:0});
+}
+
+function renderIntro(){
+  const prev = loadLocal();
+  const nameIn = h("input",{type:"text",id:"inName",autocomplete:"name",placeholder:"First and last name"});
+  const perIn = h("input",{type:"text",id:"inPeriod",placeholder:"e.g. 3"});
+  const start = () => {
+    const n = nameIn.value.trim(), p = perIn.value.trim();
+    if(!n){ toast("Enter your name so your teacher can find your results."); nameIn.focus(); return; }
+    if(prev && !confirmOverwrite){ confirmOverwrite = true; toast("A saved game exists on this device. Press Start again to replace it."); return; }
+    S = fresh(n, p || "—"); persist(); view = {screen:"map"}; render();
+  };
+  let confirmOverwrite = false;
+  const codeIn = h("textarea",{id:"inCode",placeholder:"Paste your HPL2… save code",style:"min-height:80px;font-family:var(--mono);font-size:12px"});
+  const fileIn = h("input",{type:"file",id:"inFile",accept:".json,.txt,application/json,text/plain",style:"display:none",onchange:async e=>{
+    const f = e.target.files[0]; if(!f) return;
+    try{ const t = await f.text(); let code = t.trim(); if(code.startsWith("{")){ code = JSON.parse(code).code; } resume(decodeSave(code)); }
+    catch(err){ toast(err.message || "That file couldn't be read."); }
+    e.target.value = "";
+  }});
+  app.append(
+    h("section",{class:"hero"},
+      h("div",{class:"eyebrow"},"AP Cybersecurity · Unit 2 Review · Securing Spaces"),
+      h("h1",null,"Night Shift at", h("span",null,"Hollow Pines")),
+      h("p",{class:"lede"},"You work on Xtensr Research Labs' physical security team. Xtensr is buying Hollow Pines Research across town, and the night crew won't go back in after dark. Your job: get through seven rooms, assess every vulnerability, and clear the building before dawn."),
+      h("p",{class:"lede",style:"font-size:15px"},"Day 1 covers rooms 1–4 (Topic 2.1). Day 2 covers rooms 5–7 (Topics 2.2–2.4). Each challenge is worth 10 points. You get two tries: the second try earns half credit. Asking the Oracle for a hint costs 20%.")
+    ),
+    prev ? h("div",{class:"panel",style:"margin-top:18px;border-color:var(--pumpkin)"},
+      h("h2",{style:"font-size:26px"},"Welcome back, "+prev.name),
+      h("p",{class:"note"}, "Saved on this device · " + Object.values(prev.ans).filter(a=>a.done).length + " of " + allQs().length + " challenges solved"),
+      h("div",{class:"row"}, h("button",{class:"btn primary",onclick:()=>resume(prev)},"Continue my night shift"))
+    ) : null,
+    h("div",{class:"grid2",style:"margin-top:18px"},
+      h("div",{class:"panel"},
+        h("h2",{style:"font-size:24px"}, prev ? "Start a new game" : "Clock in"),
+        h("label",{class:"f"},"Your name", nameIn),
+        h("label",{class:"f"},"Class period", perIn),
+        h("div",{class:"row"}, h("button",{class:"btn primary",onclick:start},"Start the night shift"))
+      ),
+      h("div",{class:"panel"},
+        h("h2",{style:"font-size:24px"},"Resume from Day 1"),
+        h("p",{class:"note"},"On a different computer? Load the save file you downloaded, or paste your save code."),
+        fileIn,
+        h("div",{class:"row"}, h("button",{class:"btn",onclick:()=>fileIn.click()},"Load save file")),
+        codeIn,
+        h("div",{class:"row"}, h("button",{class:"btn",onclick:()=>{ try{ resume(decodeSave(codeIn.value)); }catch(e){ toast(e.message); } }},"Load save code"))
+      )
+    ),
+    h("details",{class:"teacher panel",style:"margin-top:18px"},
+      h("summary",null,"For teachers"),
+      h("ul",null,
+        h("li",null,allQs().length+" challenges across 7 rooms, aligned to learning objectives 2.1.A–2.4.C and Scenario 2A (Securing Xtensr Labs)."),
+        h("li",null,"Ten question formats: multiple choice, true/false, select-all, matching, sequencing, sorting, fill-in-the-blank, floor-plan hotspots, badge-log analysis, and written responses."),
+        h("li",null,"Progress autosaves in the browser. Students can also download a save file or copy a save code at any time, which moves their progress to another device on Day 2. Save codes are signed, so edited codes won't load."),
+        h("li",null,"After room 7, students download a PDF with every answer, the correct answer where they missed, time per room, and a verification code. Written responses are auto-scored on completeness only and are flagged for your review.")
+      )
+    )
+  );
+  setTimeout(()=>nameIn.focus(), 50);
+}
+
+function resume(o){
+  S = o; persist();
+  view = {screen:"map"};
+  render();
+  toast("Progress loaded for " + S.name + ".");
+}
+
+function renderMap(){
+  const cleared = ROOMS.filter(roomDone).length;
+  app.append(h("div",{class:"mapHead"},
+    h("div",null, h("div",{class:"eyebrow"},"Hollow Pines Research · Floor directory"), h("h2",null,"The Manor")),
+    h("div",{class:"candles",title:cleared+" of 7 rooms cleared","aria-label":cleared+" of 7 rooms cleared"}, ROOMS.map((r,i)=>h("span",{class:"candle"+(i<cleared?" lit":"")})))
+  ));
+  [1,2].forEach(d=>{
+    app.append(h("div",{class:"dayLabel"}, d===1 ? "Day 1 · Cyber foundations" : "Day 2 · Physical security"));
+    const grid = h("div",{class:"doors"});
+    ROOMS.forEach((r,i)=>{
+      if(r.day!==d) return;
+      const un = roomUnlocked(i), dn = roomDone(r);
+      const answered = r.qs.filter(q=>S.ans[q.id]&&S.ans[q.id].done).length;
+      const st = dn ? "Cleared · "+fmt(roomScore(r))+" / "+r.qs.length*PTS : un ? (answered ? "In progress · "+answered+" / "+r.qs.length : "Open · "+r.qs.length+" challenges") : "Locked · clear room "+i+" first";
+      grid.append(h("button",{class:"door "+(dn?"cleared":un?"open":"locked"),disabled:!un,onclick:()=>{ const fq = r.qs.findIndex(q=>!(S.ans[q.id]&&S.ans[q.id].done)); view={screen:"room",room:i,q:fq<0?0:fq}; render(); }},
+        h("span",{class:"num"},"ROOM "+(i+1)),
+        h("h3",null,r.name),
+        h("span",{class:"topics"},r.topics),
+        h("span",{class:"status"},st)));
+    });
+    app.append(grid);
+  });
+  if(ROOMS.every(roomDone)) app.append(h("div",{class:"row",style:"margin-top:24px"}, h("button",{class:"btn primary",onclick:()=>{view={screen:"finish"};render();}},"See your results and download the PDF")));
+}
+
+function renderRoom(){
+  const r = ROOMS[view.room];
+  const q = r.qs[view.q];
+  if(!(q.id in draft)) draft[q.id] = initDraft(q);
+  const a = S.ans[q.id];
+  const firstOpen = r.qs.findIndex(x=>!(S.ans[x.id]&&S.ans[x.id].done));
+  const reach = firstOpen<0 ? r.qs.length-1 : firstOpen;
+
+  app.append(h("div",{class:"roomHead"},
+    h("div",{class:"row"}, h("button",{class:"btn ghost small",onclick:()=>{view={screen:"map"};render();}},"← Manor map"), h("span",{class:"eyebrow"},"Room "+(view.room+1)+" · Day "+r.day+" · "+r.topics)),
+    h("h2",null,r.name),
+    h("p",{class:"story"},r.story),
+    h("div",{class:"dots",role:"navigation","aria-label":"Challenges in this room"}, r.qs.map((x,i)=>{
+      const ax = S.ans[x.id];
+      let cls = "dot"; if(i===view.q) cls+=" cur"; if(ax&&ax.done) cls += ax.score >= PTS*0.999 ? " done" : " part";
+      return h("button",{class:cls,disabled:i>reach,"aria-label":"Challenge "+(i+1),"aria-current":i===view.q?"step":null,onclick:()=>{view.q=i;render();}}, i+1);
+    }))
+  ));
+
+  const card = h("section",{class:"card","aria-labelledby":"qp"});
+  card.append(h("div",{class:"qmeta"}, h("span",{class:"type"},TYPE_LABEL[q.type]), h("span",null,"LO "+q.lo), h("span",null,"Challenge "+(view.q+1)+" of "+r.qs.length)));
+  card.append(h("p",{class:"prompt",id:"qp",html:q.prompt}));
+  if(q.scenario) card.append(h("div",{class:"scenario",html:q.scenario}));
+  card.append(renderBody(q, a));
+
+  if(hintOpen[q.id] || (a && a.hint)) if(q.hint) card.append(h("div",{class:"hintBox"}, h("b",null,"The Oracle whispers: "), q.hint));
+
+  if(a && a.tries && !a.done){
+    card.append(h("div",{class:"fb mid",role:"status"}, h("strong",null,"The door creaks but holds."),
+      h("span",null, a.lastRight!==null && a.total>1 ? a.lastRight+" of "+a.total+" correct. " : "Not quite. ", "Change your answer and try once more for half credit.")));
+  }
+  if(a && a.done){
+    const full = a.score >= PTS*0.999, none = a.score < 0.05;
+    card.append(h("div",{class:"fb "+(q.type==="written"?"ok":full?"ok":none?"no":"mid"),role:"status"},
+      h("strong",null, q.type==="written" ? "Response recorded" : full ? "The lock clicks open." : none ? "The spirits keep this one." : "Partly unlocked."),
+      h("span",{style:"font-family:var(--mono);font-size:13px"}, fmt(a.score)+" / "+PTS+" points" + (q.type==="written"?" (provisional; your teacher reviews written answers)":"")),
+      h("span",null,q.why)));
+  }
+
+  const actions = h("div",{class:"actions"});
+  if(!(a && a.done)){
+    if(q.hint && !(a && a.hint) && !hintOpen[q.id]) actions.append(h("button",{class:"btn ghost",onclick:()=>{ hintOpen[q.id]=true; const x = S.ans[q.id] || {tries:0,score:0}; x.hint = true; S.ans[q.id]=x; persist(); render(); }},"Ask the Oracle (−20%)"));
+    actions.append(h("span",{class:"sp"}));
+    actions.append(h("button",{class:"btn primary",onclick:()=>submit(q)}, q.type==="written" ? "Submit response" : (a&&a.tries ? "Final try" : "Check answer")));
+  } else {
+    actions.append(h("span",{class:"sp"}));
+    if(view.q < r.qs.length-1) actions.append(h("button",{class:"btn primary",onclick:()=>{view.q++;render();}},"Next challenge →"));
+    else actions.append(h("button",{class:"btn primary",onclick:()=>{view={screen:"roomdone",room:view.room};render();}},"Leave the room →"));
+  }
+  card.append(actions);
+  app.append(card);
+
+  const cnt = document.getElementById(q.id+"-cnt");
+  if(cnt){ const upd=()=>{ cnt.textContent = draft[q.id].length + " of " + q.need; }; upd(); card.addEventListener("click", upd); card.addEventListener("keyup", upd); }
+}
+
+function submit(q){
+  const resp = draft[q.id];
+  if(!complete(q, resp)){ toast(q.type==="written" ? "Fill in every part before submitting." : "Answer every part before checking."); return; }
+  if(q.type==="hotspot" && resp.length !== q.need){ toast("Select exactly "+q.need+" markers. You have "+resp.length+"."); return; }
+  if(q.type==="log" && resp.length !== q.answers.length){ toast("Flag exactly "+q.answers.length+" entries. You have "+resp.length+"."); return; }
+  const a = S.ans[q.id] || {tries:0, score:0};
+  const g = grade(q, resp);
+  a.tries++;
+  a.resp = JSON.parse(JSON.stringify(resp));
+  a.lastRight = g.right; a.total = g.total; a.frac = g.frac;
+  if(q.type==="written"){ a.score = Math.round(g.frac*PTS*10)/10; a.done = true; a.teacher = true; }
+  else {
+    const att = g.frac * (a.tries===1 ? 1 : 0.5) * (a.hint ? 0.8 : 1);
+    a.score = Math.max(a.score||0, Math.round(att*PTS*10)/10);
+    if(g.frac >= 0.999 || a.tries >= 2) a.done = true;
+  }
+  S.ans[q.id] = a;
+  persist();
+  render();
+  const fb = document.querySelector(".fb"); if(fb) fb.scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+
+function renderRoomDone(){
+  const r = ROOMS[view.room];
+  const isDay1End = view.room === 3;
+  const isLast = view.room === ROOMS.length-1;
+  const sc = roomScore(r), mx = r.qs.length*PTS;
+  app.append(h("section",{class:"cleared",style:"padding-block:28px;display:grid;gap:16px"},
+    h("div",{class:"eyebrow"},"Room "+(view.room+1)+" cleared"),
+    h("h2",{style:"font-size:clamp(34px,7vw,52px)"}, r.name + " is quiet now."),
+    h("div",{class:"big"}, fmt(sc), h("span",{style:"font-size:.4em;color:var(--dust)"}," / "+mx)),
+    isDay1End ? h("div",{class:"panel",style:"border-color:var(--gold)"},
+      h("h3",{style:"font-size:26px;color:var(--gold)"},"End of Day 1. Save before you leave."),
+      h("p",null,"Your progress is saved in this browser automatically. If you might use a different computer tomorrow, download your save file or copy your save code now and keep it somewhere safe, like your school drive or an email to yourself."),
+      saveTools()
+    ) : null,
+    h("div",{class:"row"},
+      isLast ? h("button",{class:"btn primary",onclick:()=>{view={screen:"finish"};render();}},"See final results →")
+             : h("button",{class:"btn primary",onclick:()=>{view={screen:"map"};render();}}, isDay1End ? "Back to the manor (Day 2 rooms open)" : "Back to the manor map"))
+  ));
+}
+
+function renderFinish(){
+  const pct = Math.round(total()/MAX*100);
+  const allDone = ROOMS.every(roomDone);
+  app.append(h("section",{class:"cleared",style:"padding-block:28px;display:grid;gap:18px"},
+    h("div",{class:"eyebrow"}, allDone ? "Dawn breaks over Hollow Pines" : "Results so far"),
+    h("h2",{style:"font-size:clamp(34px,7vw,56px)"}, allDone ? "You survived the night shift, "+S.name.split(" ")[0]+"." : "The night isn't over yet."),
+    h("div",{class:"big"}, pct+"%"),
+    h("div",{class:"tally"}, ROOMS.map((r,i)=>h("div",{class:"t"}, h("span",null,(i+1)+". "+r.name), h("span",null, fmt(roomScore(r))+" / "+r.qs.length*PTS))),
+      h("div",{class:"t",style:"font-weight:700"}, h("span",null,"Total"), h("span",null, fmt(total())+" / "+MAX))),
+    h("div",{class:"panel",style:"border-color:var(--pumpkin)"},
+      h("h3",{style:"font-size:26px"},"Turn it in on Canvas"),
+      h("p",null,"Download your results PDF, then upload it to the Canvas assignment. It includes every answer, the correct answers you missed, and your written responses for your teacher to grade."),
+      h("div",{class:"row"}, h("button",{class:"btn primary",id:"pdfBtn",onclick:downloadPDF},"Download results PDF")),
+      h("p",{class:"note",id:"pdfMsg"})
+    ),
+    h("div",{class:"panel"}, h("h3",{style:"font-size:22px"},"Backup save"), saveTools())
+  ));
+}
+
+/* =========================================================
+   SAVE / DOWNLOAD
+   ========================================================= */
+async function offerFile(filename, blob){
+  if(window.claude && typeof window.claude.use === "function"){
+    let d = null; try{ d = await window.claude.use("downloads"); }catch(e){ d = null; }
+    if(!d) return "unavailable";
+    try{ await d.save({filename, data:blob}); return "saved"; }
+    catch(e){ return e && e.code === "declined" ? "declined" : (e && e.code === "rate_limited" ? "busy" : "unavailable"); }
+  }
+  try{
+    const url = URL.createObjectURL(blob);
+    const link = h("a",{href:url,download:filename,style:"display:none"}); document.body.append(link); link.click(); link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    return "saved";
+  }catch(e){ return "unavailable"; }
+}
+function safeName(){ return (S.name||"student").replace(/[^A-Za-z0-9]+/g,"_").replace(/^_|_$/g,"") || "student"; }
+
+function saveTools(){
+  const code = encodeSave();
+  const msg = h("p",{class:"note"}, S.savedAt ? "Autosaved on this device at " + new Date(S.savedAt).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"}) + "." : "");
+  const box = h("div",{class:"codebox",tabindex:"0","aria-label":"Save code"}, code);
+  return h("div",{style:"display:grid;gap:10px"},
+    msg,
+    h("div",{class:"row"},
+      h("button",{class:"btn",onclick:async ()=>{
+        const blob = new Blob([JSON.stringify({game:"Night Shift at Hollow Pines", student:S.name, period:S.period, code}, null, 1)], {type:"application/json"});
+        const res = await offerFile("HollowPines_save_"+safeName()+".json", blob);
+        if(res==="saved") toast("Save file downloaded.");
+        else if(res==="declined") toast("Download canceled.");
+        else toast("Downloads aren't available here. Copy the save code instead.");
+      }},"Download save file"),
+      h("button",{class:"btn",onclick:async ()=>{
+        try{ await navigator.clipboard.writeText(code); toast("Save code copied. Paste it somewhere safe."); }
+        catch(e){ const sel = window.getSelection(); const rg = document.createRange(); rg.selectNodeContents(box); sel.removeAllRanges(); sel.addRange(rg); toast("Code selected. Press Ctrl+C (or ⌘+C) to copy."); }
+      }},"Copy save code")),
+    box);
+}
+function openSave(){
+  layer.innerHTML = "";
+  const close = () => { layer.innerHTML = ""; };
+  const scrim = h("div",{class:"scrim",onclick:e=>{ if(e.target===scrim) close(); }},
+    h("div",{class:"modal",role:"dialog","aria-modal":"true","aria-labelledby":"svh"},
+      h("h3",{id:"svh"},"Save your progress"),
+      h("p",{class:"note"},"Playing tomorrow on the same computer and browser? You're already set. Switching computers? Download the save file or copy the code."),
+      saveTools(),
+      h("div",{class:"row"}, h("button",{class:"btn ghost",onclick:close},"Close"),
+        h("button",{class:"btn ghost",onclick:()=>{ close(); view={screen:"finish"}; render(); }},"View results"))));
+  layer.append(scrim);
+  scrim.querySelector("button").focus();
+  document.addEventListener("keydown", function esc(e){ if(e.key==="Escape"){ close(); document.removeEventListener("keydown",esc); } });
+}
+
+/* =========================================================
+   PDF REPORT
+   ========================================================= */
+function ascii(s){
+  return String(s==null?"":s).replace(/<br\s*\/?>/gi,"\n").replace(/<[^>]+>/g,"")
+    .replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/[–—]/g,"-").replace(/…/g,"...")
+    .replace(/→/g,"->").replace(/·/g,"-").replace(/[^\x09\x0A\x0D\x20-\x7E]/g,"");
+}
+function respText(q, r){
+  if(r==null) return "(no answer)";
+  switch(q.type){
+    case "mc": return q.options[r];
+    case "tf": return ["True","False"][r];
+    case "multi": return r.length ? r.map(i=>q.options[i]).join("; ") : "(none)";
+    case "match": return q.pairs.map((p,i)=>"- " + p[0].slice(0,70) + (p[0].length>70?"...":"") + "  =>  " + (r[i]!=null ? q.pairs[r[i]][1] : "(blank)")).join("\n");
+    case "order": return r.map((it,i)=>(i+1)+". "+q.items[it]).join("  ");
+    case "sort": return q.items.map((it,i)=>"- " + it[0] + "  =>  " + (r[i]!=null ? q.cats[r[i]] : "(blank)")).join("\n");
+    case "blank": return r.map((v,i)=>"("+(i+1)+") "+v).join("   ");
+    case "hotspot": return r.length ? r.slice().sort((a,b)=>a-b).map(i=>q.spots[i].id+" "+q.spots[i].label).join("; ") : "(none)";
+    case "log": return r.length ? r.slice().sort((a,b)=>a-b).map(i=>q.rows[i][0]+" ("+q.rows[i][2]+", "+q.rows[i][3]+"s)").join("; ") : "(none)";
+    case "written": return q.fields.map((f,i)=>f.label+":\n"+(r[i]||"(blank)")).join("\n\n");
+  }
+}
+function keyText(q){
+  switch(q.type){
+    case "mc": return q.options[q.answer];
+    case "tf": return ["True","False"][q.answer];
+    case "multi": return q.answers.map(i=>q.options[i]).join("; ");
+    case "match": return q.pairs.map(p=>"- " + p[0].slice(0,70) + (p[0].length>70?"...":"") + "  =>  " + p[1]).join("\n");
+    case "order": return q.items.map((t,i)=>(i+1)+". "+t).join("  ");
+    case "sort": return q.items.map(it=>"- " + it[0] + "  =>  " + q.cats[it[1]]).join("\n");
+    case "blank": return blankSlots(q).map((s,i)=>"("+(i+1)+") "+s.accept[0]).join("   ");
+    case "hotspot": return q.spots.filter(s=>s.ok).map(s=>s.id+" "+s.label).join("; ");
+    case "log": return q.answers.map(i=>q.rows[i][0]+" ("+q.rows[i][2]+", "+q.rows[i][3]+"s)").join("; ");
+  }
+  return "";
+}
+function mins(ms){ return Math.round((ms||0)/60000); }
+
+async function downloadPDF(){
+  const msg = document.getElementById("pdfMsg");
+  const btn = document.getElementById("pdfBtn");
+  if(!window.jspdf){ msg.textContent = "The PDF tool didn't load. Check your internet connection and reload the page; your progress is saved."; return; }
+  btn.disabled = true; msg.textContent = "Building your PDF…";
+  try{
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({unit:"pt", format:"letter"});
+    const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 54, CW = W - 2*M;
+    let y = M;
+    const ensure = need => { if(y + need > H - M){ doc.addPage(); y = M; } };
+    const text = (str, size=10, style="normal", color=[30,24,36], indent=0, gap=3) => {
+      doc.setFont("helvetica", style); doc.setFontSize(size); doc.setTextColor(...color);
+      const lines = doc.splitTextToSize(ascii(str), CW - indent);
+      const lh = size * 1.32;
+      lines.forEach(l=>{ ensure(lh); doc.text(l, M+indent, y + size); y += lh; });
+      y += gap;
+    };
+    // header band
+    doc.setFillColor(18,14,23); doc.rect(0,0,W,108,"F");
+    doc.setFillColor(255,140,50); doc.rect(0,108,W,4,"F");
+    doc.setTextColor(255,140,50); doc.setFont("helvetica","bold"); doc.setFontSize(9);
+    doc.text("AP CYBERSECURITY - UNIT 2 REVIEW - SECURING SPACES", M, 40);
+    doc.setTextColor(239,229,213); doc.setFont("times","bold"); doc.setFontSize(26);
+    doc.text("Night Shift at Hollow Pines", M, 72);
+    doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.setTextColor(171,159,183);
+    doc.text("Results report", M, 92);
+    y = 136;
+    const done = doneCount(), tot = total();
+    text("Student: " + S.name + "     Period: " + S.period, 13, "bold");
+    text("Generated: " + new Date().toLocaleString() + "     Started: " + new Date(S.created).toLocaleDateString(), 10, "normal", [90,80,100]);
+    text("Challenges completed: " + done + " of " + allQs().length, 10, "normal", [90,80,100], 0, 10);
+    // score box
+    ensure(70);
+    doc.setDrawColor(194,96,26); doc.setLineWidth(1.2); doc.roundedRect(M, y, CW, 62, 6, 6, "S");
+    doc.setFont("helvetica","bold"); doc.setFontSize(30); doc.setTextColor(194,96,26);
+    doc.text(fmt(tot) + " / " + MAX, M+16, y+40);
+    doc.setFontSize(11); doc.setTextColor(30,24,36);
+    doc.text(Math.round(tot/MAX*100) + "%  (written responses provisional pending teacher review)", M+200, y+36);
+    y += 80;
+    // room table
+    text("Score by room", 12, "bold", [30,24,36], 0, 4);
+    ROOMS.forEach((r,i)=>{
+      ensure(16);
+      doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.setTextColor(30,24,36);
+      doc.text((i+1)+". "+r.name+"  (Day "+r.day+", "+ascii(r.topics.split("  ")[0])+")", M, y+10);
+      doc.text(fmt(roomScore(r))+" / "+r.qs.length*PTS+"    "+mins(S.time[r.id])+" min", W-M, y+10, {align:"right"});
+      y += 16;
+    });
+    y += 8;
+    doc.setDrawColor(200,190,205); doc.line(M,y,W-M,y); y += 14;
+
+    ROOMS.forEach((r,ri)=>{
+      ensure(40);
+      text("Room "+(ri+1)+": "+r.name, 14, "bold", [194,96,26], 0, 2);
+      text(r.topics, 9, "normal", [110,100,120], 0, 8);
+      r.qs.forEach((q,qi)=>{
+        const a = S.ans[q.id];
+        ensure(50);
+        const status = !a || !a.done ? "NOT COMPLETED" : (q.type==="written" ? "TEACHER REVIEW" : (a.score>=PTS*0.999 ? "CORRECT" : a.score<0.05 ? "INCORRECT" : "PARTIAL"));
+        const sc = a && a.done ? fmt(a.score)+"/"+PTS : "0/"+PTS;
+        const extras = a ? [a.tries===2?"2 tries":null, a.hint?"hint used":null].filter(Boolean).join(", ") : "";
+        text("Q"+(qi+1)+"  ["+q.lo+"]  "+TYPE_LABEL[q.type]+"  -  "+sc+"  -  "+status+(extras?"  ("+extras+")":""), 10, "bold", status==="CORRECT"?[30,110,70]:status==="INCORRECT"||status==="NOT COMPLETED"?[180,50,40]:[150,100,20], 0, 1);
+        text(q.prompt + (q.scenario ? "  " + q.scenario : ""), 9, "italic", [70,62,80], 10, 2);
+        if(a && a.resp!==undefined){
+          text("Answer:", 9, "bold", [30,24,36], 10, 0);
+          text(respText(q, a.resp), 9, "normal", [30,24,36], 20, 2);
+        }
+        if(q.type!=="written" && a && a.done && a.score < PTS*0.999){
+          text("Correct answer:", 9, "bold", [30,110,70], 10, 0);
+          text(keyText(q), 9, "normal", [30,24,36], 20, 2);
+        }
+        if(q.type==="written") text("Teacher score: ______ / "+PTS+"   (auto-score for completeness: "+(a&&a.done?fmt(a.score):"0")+")", 9, "normal", [110,100,120], 10, 2);
+        y += 6;
+      });
+      y += 6;
+    });
+
+    ensure(60);
+    doc.setDrawColor(200,190,205); doc.line(M,y,W-M,y); y += 14;
+    const vcode = fnv(SALT + JSON.stringify(S.ans) + S.name).toUpperCase();
+    text("Verification code: HP-" + vcode, 10, "bold", [30,24,36], 0, 2);
+    text("Teachers: this code matches the student's saved answers. Ask the student for their save code to confirm if needed.", 8, "normal", [110,100,120]);
+
+    const n = doc.getNumberOfPages();
+    for(let i=1;i<=n;i++){ doc.setPage(i); doc.setFont("helvetica","normal"); doc.setFontSize(8); doc.setTextColor(140,130,150);
+      doc.text(ascii(S.name)+" - Period "+ascii(S.period)+" - Night Shift at Hollow Pines", M, H-28);
+      doc.text("Page "+i+" of "+n, W-M, H-28, {align:"right"}); }
+
+    const blob = doc.output("blob");
+    const fname = "Unit2_HollowPines_" + safeName() + "_P" + String(S.period).replace(/[^A-Za-z0-9]/g,"") + ".pdf";
+    const res = await offerFile(fname, blob);
+    msg.textContent = res==="saved" ? "Downloaded " + fname + ". Upload it to Canvas." :
+                      res==="declined" ? "Download canceled. Press the button again when you're ready." :
+                      res==="busy" ? "A download prompt is already open. Finish that one first." :
+                      "Downloads aren't available in this view. Ask your teacher for the downloadable copy of the game; your save code moves your progress there.";
+  }catch(e){
+    msg.textContent = "Something went wrong building the PDF. Reload the page and try again; your progress is saved.";
+  }
+  btn.disabled = false;
+}
+
+/* =========================================================
+   TIME TRACKING + BOOT
+   ========================================================= */
+let tickN = 0;
+setInterval(()=>{
+  if(!S || view.screen!=="room" || document.hidden) return;
+  const id = ROOMS[view.room].id;
+  S.time[id] = (S.time[id]||0) + 5000;
+  if(++tickN % 6 === 0) persist();
+}, 5000);
+window.addEventListener("pagehide", ()=>persist());
+
+render();
+</script>
+Displaying Night_Shift_at_Hollow_Pines.html.
