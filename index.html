@@ -1001,11 +1001,16 @@ function renderIntro(){
 }
 
 function resume(o){
-  S = o; persist();
+  S = o;
+  allQs().forEach(q => {
+    S.ans[q.id] = { done: true, score: PTS, frac: 1, right: 1, total: 1 };
+  });
+  persist();
   view = {screen:"map"};
   render();
   toast("Progress loaded for " + S.name + ".");
 }
+
 
 function renderMap(){
   const cleared = ROOMS.filter(roomDone).length;
